@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose')
 const gravatar = require('gravatar')
+const config = require('config')
 const router = express.Router()
 const User = require('../../models/Users')
 
@@ -40,7 +41,19 @@ async(req,res)=>{
         const salt= await bcrypt.genSalt(10)
         user.password = await bcrypt.hash(password,salt)
         await user.save()
-        res.send('User registered')
+
+        //create token
+        const payload ={
+            user:{
+                id:user._id
+            }
+        }
+        jwt.sign(payload,config.get('jwtScrete'),
+        {expiresIn:36000},
+        (err,token)=>{
+            if(err) throw err
+            res.json({token})
+        })
         
     }catch(ex){
         console.error(ex.message)
