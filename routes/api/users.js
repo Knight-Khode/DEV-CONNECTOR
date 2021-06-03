@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const gravatar = require('gravatar')
 const config = require('config')
 const router = express.Router()
-const User = require('../../models/Users')
+const User = require('../../models/User')
 
 router.post('/',[
     check('name', 'Nmae is required').not().isEmpty(),
