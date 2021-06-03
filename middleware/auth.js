@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const {check,validationResult} = require('express-validator')
-const User = require('../models/User')
+
 
 module.exports = async function(req,res,next){
     const token = req.header('x-auth-token')
@@ -10,7 +10,7 @@ module.exports = async function(req,res,next){
 
     try{
         //check token
-        const decode = jwt.verify(token,config.get('jwtScrete'))
+        const decode = jwt.verify(token,config.get('jwtSecrete'))
         req.user = decode.user
         next()
     }catch(ex){

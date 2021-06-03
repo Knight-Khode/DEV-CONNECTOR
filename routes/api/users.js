@@ -48,7 +48,7 @@ async(req,res)=>{
                 id:user._id
             }
         }
-        jwt.sign(payload,config.get('jwtScrete'),
+        jwt.sign(payload,config.get('jwtSecrete'),
         {expiresIn:36000},
         (err,token)=>{
             if(err) throw err
