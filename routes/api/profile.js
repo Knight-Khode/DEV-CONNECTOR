@@ -1,4 +1,5 @@
 const express = require("express")
+const {check,validationResult} = require('express-validator')
 const auth = require("../../middleware/auth")
 const Profile = require('../../models/Profile')
 const router = express.Router()
@@ -15,5 +16,63 @@ router.get('/me',auth,async(req,res)=>{
     }
 })
 
+//Create Profile
+router.post('/',[auth,
+    check('status','Status is required')
+    .not()
+    .isEmpty(),
+    check('skills','Skills is required')
+    .not()
+    .isEmpty()
+],
+async(req,res)=>{
+    const errors = validationResult(req)
+    if(!errors.isEmpty())return res.status(400).json({errors:errors.array()})
+    const{
+        company,
+        website,
+        bio,
+        status,
+        githubUsername,
+        skills,
+        youtube,
+        facebook,
+        twitter,
+        instagram,
+        linkedin
+    }=req.body
+    
+    //Build profile object
+    const profileFields ={}
+    if(company)profileFields.company = company
+    if(website)profileFields.website = website
+    if(bio)profileFields.bio = bio
+    if(status)profileFields.status = status
+    if(githubUsername)profileFields.githubUsername = githubUsername
+    if(skills){
+        profileFields.skills = skills.split(',').map(s=>s.trim())
+    }
+    if(youtube)profileFields.social = youtube
+    if(facebook)profileFields.social = facebook
+    if(twitter)profileFields.instagram = instagram
+    if(linkedin)profileFields.linkedin = linkedin
+
+    try{
+        //Search if user has profile
+        let profile = await Profile.findOne({user:req.user.id})
+        if(profile){
+            profile = await Profile.findOneAndUpdate({user:req.user.id},{
+                $set:profileFields
+            },{new:true})
+        }
+        profile = new Profile(profileFields)
+
+        await profile.save()
+        res.json(profile)
+    }catch(err){
+        console.error(err.message)
+        res.status(500).send('Server Error')
+    }
+})
 
 module.exports = router
