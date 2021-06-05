@@ -3,6 +3,8 @@ const {check,validationResult} = require('express-validator')
 const auth = require("../../middleware/auth")
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
+const config = require('config')
+const request = require('request')
 const router = express.Router()
 
 //Get all profiles
@@ -219,6 +221,36 @@ router.put('/education',[
         res.status(500).send('Server Error')
     }
 
+})
+
+//deleting experience
+router.delete('/experience/:exp_id',auth,async(req,res)=>{
+    try{
+        const profile = await Profile.findOne({user:req.user.id})
+        if(!profile)return res.status(400).send('could not find profile')
+        const removeId = profile.experience.map(e=>e.id).indexOf(req.params.id)
+        profile.experience.splice(removeId,1)
+        await profile.save()
+        res.json(profile)
+    }catch(err){
+        console.error(err.message)
+        res.send('Server Error').status(500)
+    }
+})
+
+//deleting education
+router.delete('/education/:edu_id',auth,async(req,res)=>{
+    try{
+        const profile = await Profile.findOne({user:req.user.id})
+        if(!profile)return res.status(400).send('could not find profile')
+        const removeId = profile.education.map(e=>e.id).indexOf(req.params.id)
+        profile.education.splice(removeId,1)
+        await profile.save()
+        res.json(profile)
+    }catch(err){
+        console.error(err.message)
+        res.send('Server Error').status(500)
+    }
 })
 
 module.exports = router
