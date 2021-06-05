@@ -15,6 +15,6 @@ module.exports = async function(req,res,next){
         next()
     }catch(ex){
         console.error(ex.mesage)
-        res.status(401).json({msg:'Tken is not valid'})
+        res.status(401).json({msg:'Token is not valid'})
     }
 }
