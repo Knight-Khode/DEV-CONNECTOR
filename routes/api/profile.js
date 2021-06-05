@@ -2,7 +2,19 @@ const express = require("express")
 const {check,validationResult} = require('express-validator')
 const auth = require("../../middleware/auth")
 const Profile = require('../../models/Profile')
+const User = require('../../models/User')
 const router = express.Router()
+
+//Get all profiles
+router.get('/',async(req,res)=>{
+    try{
+        const profiles = await Profile.find().populate('user',["name","avatar"])
+        res.json(profiles)
+    }catch(err){
+        console.error(err.message)
+        res.status(500).send('Server Error')
+    }
+})
 
 //Get current User Profile
 router.get('/me',auth,async(req,res)=>{
@@ -44,6 +56,7 @@ async(req,res)=>{
     
     //Build profile object
     const profileFields ={}
+    profileFields.user = req.user.id
     if(company)profileFields.company = company
     if(website)profileFields.website = website
     if(bio)profileFields.bio = bio
@@ -69,6 +82,21 @@ async(req,res)=>{
 
         await profile.save()
         res.json(profile)
+    }catch(err){
+        console.error(err.message)
+        res.status(500).send('Server Error')
+    }
+})
+
+//deleting profile and user
+router.delete('/',auth,async(req,res)=>{
+    try{
+        //delete user
+        await User.findOneAndRemove({_id:req.user.id})
+
+        //delete profile
+        await Profile.findOneAndRemove({user:req.user.id})
+        res.json({msg:"User deleted"})
     }catch(err){
         console.error(err.message)
         res.status(500).send('Server Error')
