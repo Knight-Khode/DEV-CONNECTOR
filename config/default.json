@@ -1,3 +1,5 @@
 {
-    "jwtSecrete":"myScrete"
+    "jwtSecrete":"myScrete",
+    "githubClientId":"32e8873788cd42590918",
+    "githubClientSecret":"9c21adbfe12de03e4ffd2c4142067dcabe6c8b36"
 }
