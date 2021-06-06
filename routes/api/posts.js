@@ -5,10 +5,6 @@ const User = require('../../models/User')
 const Posts = require('../../models/Post')
 const {check,validationResult}=require('express-validator')
 
-router.get('/',(req,res)=>{
-    res.send('Posts route')
-})
-
 //Create post
 router.post('/',[auth,
     check('text','Text is required')
@@ -34,6 +30,17 @@ router.post('/',[auth,
     }catch(err){
         console.error(err.message)
         res.send('Server Error').status(500)
+    }
+})
+
+//Get all posts
+router.get('/',auth,async(req,res)=>{
+    try{
+        const posts = await Posts.find().sort({date:-1})
+        res.json(posts)
+    }catch(err){
+        console.error(error.message)
+        res.status(500).send('Server Error')
     }
 })
 
