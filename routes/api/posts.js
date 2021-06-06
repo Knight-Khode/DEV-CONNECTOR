@@ -16,7 +16,6 @@ router.post('/',[auth,
     try{
         //grab active user
         const user = await User.findById(req.user.id).select('-password')
-        console.log(req.user)
 
         const newPost=new Posts({
             text:req.body.text,
@@ -40,6 +39,17 @@ router.get('/',auth,async(req,res)=>{
         res.json(posts)
     }catch(err){
         console.error(error.message)
+        res.status(500).send('Server Error')
+    }
+})
+
+router.get('/:id',auth,async(req,res)=>{
+    try{
+        const post = await Posts.findById(req.params.id)
+        if(!post)return res.status(404).json({msg:"Post does not exist"})
+        res.json(post)
+    }catch(err){
+        console.error(err.message)
         res.status(500).send('Server Error')
     }
 })
