@@ -28,8 +28,8 @@ async(req,res)=>{
         if(!user)return res.status(404).json({msg:'Invalid Credentials'})
 
         //compare password
-        user = await bcrypt.compare(password,user.password)
-        if(!user)return res.status(404).json({msg:'Invalid Credentials'})
+        const passwordcheck = await bcrypt.compare(password,user.password)
+        if(!passwordcheck)return res.status(404).json({msg:'Invalid Credentials'})
 
         //create jwt
         const payload ={
