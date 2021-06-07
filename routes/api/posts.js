@@ -104,4 +104,33 @@ router.put('/unlike/:id',auth,async(req,res)=>{
         res.status(500).send('Server Error')
     }
 })
+
+//Comment route
+router.post('/comment/:id',[
+    auth,
+    check('text',"Text is required")
+    .not()
+    .isEmpty()
+],async(req,res)=>{
+    try{
+        const post = await Posts.findById(req.params.id)
+        const user = await User.findById(req.user.id).select('-password')
+        //construct comment
+        const newComment = {
+            text:req.body.text,
+            name:user.name,
+            avatar:user.avatar,
+            user:req.user.id
+        }
+
+        //add new comment
+        post.comments.unshift(newComment)
+        await post.save()
+        res.json(post.comments)
+    }catch(err){
+        console.error(err.message)
+        res.status(500).send('Server Error')
+    }
+    
+})
 module.exports = router
